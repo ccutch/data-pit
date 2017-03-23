@@ -7,8 +7,6 @@ package users
 
 import (
 	"context"
-	"encoding/json"
-	"net/http"
 
 	"github.com/ccutch/data-pit/models"
 	"google.golang.org/appengine/user"
@@ -29,9 +27,9 @@ type UserResponse struct {
 // Handles hiding private fields when user making request is not user
 // being requested and adds private fields when the user being requested
 // is the user making the request.
-func NewUserResponse(ctx context.Context, u *models.User) UserResponse {
+func NewUserResponse(ctx context.Context, u *models.User) *UserResponse {
 	user := user.Current(ctx)
-	res := UserResponse{User: u}
+	res := &UserResponse{User: u}
 	isUser := user != nil && user.Email == u.Email
 
 	if isUser {
@@ -42,10 +40,4 @@ func NewUserResponse(ctx context.Context, u *models.User) UserResponse {
 		res.Email = ""
 	}
 	return res
-}
-
-// Respond writes user response to http response writer
-func (u UserResponse) Respond(ctx context.Context, w http.ResponseWriter) {
-	e := json.NewEncoder(w)
-	e.Encode(u)
 }

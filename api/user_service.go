@@ -20,6 +20,16 @@ func (us *UserService) Response() Responder {
 // Methods fulfils service interface
 func (us *UserService) Methods() map[string]ContextResponder {
 	return map[string]ContextResponder{
-		"GET": users.GenerateTestUser,
+		"GET":  users.GetListOfUsers,
+		"POST": users.CreateUser,
+	}
+}
+
+// AdditionalRoutes adds more routes
+func (us *UserService) AdditionalRoutes() map[string]ContextResponder {
+	return map[string]ContextResponder{
+		"/generate-user": users.GenerateTestUser,
+		"/signin":        users.Signin,
+		"/signup":        users.Signup,
 	}
 }

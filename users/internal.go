@@ -16,5 +16,4 @@ func GenerateTestUser(ctx context.Context) interface{} {
 
 	db.NewDatastore(ctx).Create(u)
 	return NewUserResponse(ctx, u)
-	// return "test"
 }

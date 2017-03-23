@@ -10,6 +10,7 @@ import (
 type Service interface {
 	Name() string
 	Methods() map[string]ContextResponder
+	AdditionalRoutes() map[string]ContextResponder
 	Response() Responder
 }
 
@@ -29,6 +30,11 @@ func (ds *DefaultService) Methods() map[string]ContextResponder {
 		"PUT":    methodNotImplemented,
 		"DELETE": methodNotImplemented,
 	}
+}
+
+// AdditionalRoutes fulfils service interface
+func (ds *DefaultService) AdditionalRoutes() map[string]ContextResponder {
+	return map[string]ContextResponder{}
 }
 
 // Helper Context responder for methods that arent implemented

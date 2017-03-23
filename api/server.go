@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -23,6 +24,20 @@ func InitServer() http.Handler {
 type Server struct {
 	router   *mux.Router
 	services map[string]Service
+}
+
+func contextHandler(cr ContextResponder) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := appengine.NewContext(r)
+		rs := cr(ctx)
+
+		if rs == nil {
+			return
+		}
+
+		e := json.NewEncoder(w)
+		e.Encode(rs)
+	}
 }
 
 // RegisterService add service to server with given url
@@ -54,15 +69,14 @@ func (s *Server) BindService(url string, service Service) {
 		Name(service.Name()).
 		Methods(ms...).Path(url).
 		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ctx := appengine.NewContext(r)
 			rm := strings.ToUpper(r.Method)
-
 			m := service.Methods()[rm]
-			rs := m(ctx)
-			if rs != nil {
-				rs.(Responder).Respond(ctx, w)
-			}
+			contextHandler(m)(w, r)
 		})
+
+	for u, h := range service.AdditionalRoutes() {
+		s.router.HandleFunc(url+u, contextHandler(h))
+	}
 }
 
 // ServeHTTP fulfills http.Handler interface
