@@ -1,12 +1,15 @@
+package users
+
 /**
  * UserResponse follows the api.Responder interface of the api package
  * using response classes to format, sanitize, add virtual fields, and
  * normalize data from models.
  */
-package users
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 
 	"github.com/ccutch/data-pit/models"
 	"google.golang.org/appengine/user"
@@ -17,9 +20,7 @@ import (
 type UserResponse struct {
 	// User model, gets all fields from this model
 	*models.User
-
-	// Virual fields that are generated for the response but do not exist in the
-	// database
+	err   error
 	Token string `json:"token"`
 }
 
@@ -40,4 +41,22 @@ func NewUserResponse(ctx context.Context, u *models.User) *UserResponse {
 		res.Email = ""
 	}
 	return res
+}
+
+// JSON formats user response as a string of JSON
+func (u *UserResponse) JSON() string {
+	b, _ := json.Marshal(u)
+	var out bytes.Buffer
+	json.Indent(&out, b, "", "\t")
+	return string(out.String())
+}
+
+// String overrides print behavior for easier logging
+func (u *UserResponse) String() string {
+	return u.JSON()
+}
+
+// Error returns the error if one is present
+func (u *UserResponse) Error() error {
+	return u.err
 }

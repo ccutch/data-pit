@@ -1,10 +1,16 @@
 package models
 
-import "github.com/ccutch/datastore-model"
+import (
+	"time"
+
+	"cloud.google.com/go/datastore"
+)
 
 // User model to store information about the user
 type User struct {
-	db.Model
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	Created     time.Time      `json:"created"`
+	Updated     time.Time      `json:"updated"`
+	Name        string         `json:"name"`
+	Email       string         `json:"email"`
+	LocationKey *datastore.Key `json:"-"`
 }
