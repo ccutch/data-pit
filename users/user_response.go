@@ -43,6 +43,10 @@ func NewUserResponse(ctx context.Context, u *models.User) *UserResponse {
 	return res
 }
 
+// Format prepares user response for output, such as printing as
+// a string or serving from the api server. In this method we want
+// to provide fields that are
+
 // JSON formats user response as a string of JSON
 func (u *UserResponse) JSON() string {
 	b, _ := json.Marshal(u)
